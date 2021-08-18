@@ -1,9 +1,12 @@
 import pypinyin
-import passage
+import passage as p
+import character as c
+import transfer as t
 import numpy
 import matplotlib.pyplot as plt
 
 frequency = {}
+frequency_p = {}
 var = []
 total = 0
 variance = 0
@@ -29,11 +32,17 @@ def f2(word):
 # 计算方差
 def v():
     for i in frequency:
-        frequency[i] = frequency[i] / total
+        frequency_p[i] = frequency[i] / total
     global variance
-    for i in frequency:
-        var.append(frequency[i])
-    variance = numpy.var(var) * 100
+    for i in frequency_p:
+        var.append(frequency_p[i])
+    variance = numpy.var(var) * 10000
+
+
+def first():
+    d_order = sorted(frequency.items(), key=lambda x: x[1], reverse=False)
+    for i in d_order:
+        print(i)
 
 
 # 填充绘图数组
@@ -101,7 +110,10 @@ def show(t):
     dimlist = [(1, 26)]
     for d in dimlist:
         plt.matshow(samplemat(d))
-        plt.title(t)
+    plt.title(t)
+    plt.xticks(range(26), ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                           'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'))
+    plt.yticks(range(0), ())
     plt.colorbar()
     plt.show()
 
@@ -110,22 +122,36 @@ def show(t):
 def output(t):
     global total, variance
     print(t, ':')
-    # print(frequency)
+    print(frequency)
     print('total = ', total)
     print('variance = ', variance)
     show(t)
 
 
 # 优化
-def optimized():
+def optimized(p):
     global total, variance
+    t.init()
 
-    show('optimized')
+    for i in p:
+        if i in t.trans:
+            for x in f(i):
+                frequency[x] -= 1
+                total -= 1
+            for x in t.trans[i]:
+                total += 1
+                if x in frequency:
+                    frequency[x] += 1
+                else:
+                    frequency[x] = 1
+    v()
+    output('optimized')
 
 
-if __name__ == "__main__":
-    # 统计字频
-    s = f(passage.p)
+# 统计
+def stat(p):
+    global total
+    s = f(p)
     for i in s:
         if i.isalpha():
             total += 1
@@ -135,9 +161,18 @@ if __name__ == "__main__":
                 frequency[i] = 1
     v()
 
+
+if __name__ == "__main__":
+    # 基于常用汉字的测试
+    # p = c.s * 2 + c.s1
+    p = p.p
+    # 统计字频
+    stat(p)
+
     # 计算统计量 绘制热力图
     output('origin')
 
-    # optimized()
+    # 优化
+    optimized(p)
 
 
