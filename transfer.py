@@ -28,8 +28,12 @@ def init():
             trans[ch] = first
         elif visited[first] <= 26:
             trans[ch] = first + order[visited[first] - 1]
-        else:
+        elif visited[first] <= 26 * 26:
             trans[ch] = first + order[int((visited[first] - 1) / 26)] + order[(visited[first] - 1) % 26]
+        else:
+            trans[ch] = first + order[int((visited[first] - 1) / 26 * 26)] \
+                        + order[int(((visited[first] - 1) % 26 * 26) / 26)] \
+                        + order[(visited[first] - 1) % 26]
         visited[first] += 1
         if int((visited[first] - 1) / 26) == 1:
             visited[first] += 4
@@ -45,6 +49,7 @@ def init():
             visited[first] += 2
         if (visited[first] - 1) % 26 == 4:
             visited[first] += 1
+    # print(trans)
 
 # 计数
 # for i in c.s:
